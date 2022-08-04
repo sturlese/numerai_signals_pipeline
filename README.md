@@ -1,10 +1,10 @@
 # Numerai Signals Pipeline
-Downloads data from Yahoo Finance, generates features, trains a model and submit the predictions.
+Downloads data from Yahoo Finance, generates features, trains a model and submits the predictions.
 
 #### Running the pipeline
 
 ```sh
-python launcher <your_properties_file>.json
+python launcher.py <your_properties_file>.json
 ```
 The json properties file must contain 3 keys:
 ```sh
