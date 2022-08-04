@@ -57,5 +57,3 @@ def create_target_io(db_input, db_output):
     full_data.sort_values(by=['date', 'bloomberg_ticker'], inplace=True, ascending=(True, True))
     df_target = create_target(full_data)
     df_target.to_parquet(db_output / f'data-target.parquet', index=False, compression='brotli')
-
-

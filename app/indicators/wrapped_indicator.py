@@ -21,7 +21,3 @@ class WrappedIndicator:
             obj.set_lags(self.lags)
             obj.build(tiny_df, df)
         return tiny_df
-
-
-
-

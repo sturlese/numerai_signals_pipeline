@@ -81,9 +81,3 @@ def parquet_concat(dfs, path, db_pickle):
         pqwriter.write_table(table)
     if pqwriter:
         pqwriter.close()
-
-
-
-
-
-

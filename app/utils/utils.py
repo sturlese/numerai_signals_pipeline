@@ -34,9 +34,3 @@ def get_ticker_data_cols(db_dir, cols):
         ticker_data = pd.read_parquet(db_dir, columns=cols)
 
     return ticker_data
-
-
-
-
-
-

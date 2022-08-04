@@ -120,10 +120,3 @@ def create_colab_csv_io(db_input, db_output, config):
     for f in feature_names:
         clean_full_data[f] = full_data[f] 
     clean_full_data.to_csv(db_output / f'{ML_DATA_FILE}', index=False)
-
-
-
-
-
-
-

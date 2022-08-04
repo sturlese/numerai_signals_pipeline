@@ -105,4 +105,3 @@ class WMA(IndicatorDynamic): #normalized
         tiny_df[self.NAME] = ticker_df['adj_close'] / wma.wma().astype('float32')
         self.build_extra_features(tiny_df)
         return tiny_df
-

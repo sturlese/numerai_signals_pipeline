@@ -83,7 +83,7 @@ def run_prediction(db_input, db_predictions, submission_config, data_config):
 
     feature_names = remove_corr_features(train_data.copy(deep=True))
 
-    model = XGBRegressor(alpha=5, max_depth=5, learning_rate=0.01, n_estimators=2000, n_jobs=-1, colsample_bytree=0.1, tree_method='gpu_hist', predictor='gpu_predictor', random_state=1, silent=True)
+    model = XGBRegressor(max_depth=5, learning_rate=0.01, n_estimators=2000, n_jobs=-1, colsample_bytree=0.1, tree_method='gpu_hist', predictor='gpu_predictor', random_state=1, silent=True)
     model.fit(train_data[feature_names], train_data[data_config.target_name])
     logger.info("Model trained")
     validation_data[PREDICTION_NAME] = model.predict(validation_data[feature_names])
@@ -96,12 +96,3 @@ def run_prediction(db_input, db_predictions, submission_config, data_config):
     if submission_config.numerai_submit:
         napi = numerapi.SignalsAPI(submission_config.public_id, submission_config.secret_key)
         napi.upload_predictions(predictions_path, model_id=submission_config.model_id)
-
-    
-
-
-
-
-
-
-

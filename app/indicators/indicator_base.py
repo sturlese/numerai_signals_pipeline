@@ -42,8 +42,3 @@ class IndicatorStatic(IndicatorBase):
         for i in self.indicator_lags:
             pos = i
             tiny_df[f'{self.NAME}_lag_{pos}'] = tiny_df[self.NAME].shift(pos).astype('float32')
-
-
-
-
-

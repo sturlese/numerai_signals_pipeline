@@ -41,7 +41,6 @@ def run_full_pipline(indicator_config, data_config, submission_config):
         else:
             logger.info("Need submission. Let's run the pipeline")
 
-    indicator_list = indicator_config.get_indicator_list()
     start_time_full = time.perf_counter()
 
     paths = folders.PathSignals(data_config)
@@ -87,9 +86,3 @@ data_config = get_data_config(False)
 submission_config = get_submission_config(properties)
 
 run_full_pipline(indicator_config, data_config, submission_config)
-
-
-
-
-
-
