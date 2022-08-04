@@ -1,0 +1,20 @@
+
+data/*
+devel*
+test_downloaded*
+.DS_Store
+*.csv
+*.parquet
+*.pickle
+properties_prod.json
+
+
+#PRE-GENERATED STUFF
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
