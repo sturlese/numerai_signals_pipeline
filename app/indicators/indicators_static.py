@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from ta.momentum import ROCIndicator, RSIIndicator, StochasticOscillator, WilliamsRIndicator, KAMAIndicator, StochRSIIndicator, UltimateOscillator, AwesomeOscillatorIndicator, PercentagePriceOscillator, PercentageVolumeOscillator, TSIIndicator
 from ta.volatility import UlcerIndex, bollinger_pband, keltner_channel_pband, donchian_channel_pband
-from ta.trend import ADXIndicator, TRIXIndicator, CCIIndicator, DPOIndicator, VortexIndicator, KSTIndicator, stc, MassIndex
+from ta.trend import TRIXIndicator, CCIIndicator, DPOIndicator, VortexIndicator, KSTIndicator, stc, MassIndex
 from ta.volume import NegativeVolumeIndexIndicator, VolumePriceTrendIndicator, OnBalanceVolumeIndicator, AccDistIndexIndicator, MFIIndicator, ForceIndexIndicator, ChaikinMoneyFlowIndicator, EaseOfMovementIndicator, VolumeWeightedAveragePrice
 
 import logging
@@ -56,76 +56,6 @@ class MACD(IndicatorStatic):
         tiny_df[self.NAME] = macd.astype('float32')
         self.build_extra_features(tiny_df)
 
-        return tiny_df
-
-class CPC(IndicatorStatic): #close percentage change
-    NAME = 'CPC'
-    def __init__(self):
-        return
-        
-    def get_name(self):
-        return self.NAME
-    
-    def build(self, tiny_df, ticker_df):
-        tiny_df[self.NAME] = ticker_df['adj_close']
-        self.build_extra_pct(tiny_df)
-        tiny_df.drop([self.NAME], axis=1, inplace=True)
-        return tiny_df
-
-class ADI(IndicatorStatic): 
-    NAME = 'ADI'
-    def __init__(self):
-        return
-        
-    def get_name(self):
-        return self.NAME
-    
-    def build(self, tiny_df, ticker_df):
-        adi = AccDistIndexIndicator(high=ticker_df['high'], low=ticker_df['low'], close=ticker_df['adj_close'], volume=ticker_df['volume'])
-        tiny_df[self.NAME] = adi.acc_dist_index().astype('float32')
-        self.build_extra_features(tiny_df)
-        return tiny_df
-
-class OBV(IndicatorStatic):
-    NAME = 'OBV'
-    def __init__(self):
-        return
-        
-    def get_name(self):
-        return self.NAME
-    
-    def build(self, tiny_df, ticker_df):
-        obv = OnBalanceVolumeIndicator(close=ticker_df['adj_close'], volume=ticker_df['volume'])
-        tiny_df[self.NAME] = obv.on_balance_volume().astype('float32')
-        self.build_extra_features(tiny_df)
-        return tiny_df
-
-class VPT(IndicatorStatic):
-    NAME = 'VPT'
-    def __init__(self):
-        return
-        
-    def get_name(self):
-        return self.NAME
-    
-    def build(self, tiny_df, ticker_df):
-        vpt = VolumePriceTrendIndicator(close=ticker_df['adj_close'], volume=ticker_df['volume'])
-        tiny_df[self.NAME] = vpt.volume_price_trend().astype('float32')
-        self.build_extra_features(tiny_df)
-        return tiny_df
-
-class NVI(IndicatorStatic):
-    NAME = 'NVI'
-    def __init__(self):
-        return
-        
-    def get_name(self):
-        return self.NAME
-    
-    def build(self, tiny_df, ticker_df):
-        nvi = NegativeVolumeIndexIndicator(close=ticker_df['adj_close'], volume=ticker_df['volume'])
-        tiny_df[self.NAME] = nvi.negative_volume_index().astype('float32')
-        self.build_extra_features(tiny_df)
         return tiny_df
 
 class KCP(IndicatorStatic):
@@ -272,28 +202,6 @@ class PPO(IndicatorStatic):
         self.build_extra_features(tiny_df)
         return tiny_df
 
-class PVO(IndicatorStatic):
-    NAME = 'PVO'
-    def __init__(self):
-        return
-        
-    def get_name(self):
-        return self.NAME
-    
-    def build(self, tiny_df, ticker_df):
-
-        window_slow = 26
-        window_fast = 12
-        window_sign = 9
-
-        pvo = PercentageVolumeOscillator(volume=ticker_df['volume'], 
-            window_fast=window_fast, 
-            window_slow=window_slow, 
-            window_sign=window_sign)
-        tiny_df[self.NAME] = pvo.pvo_hist().astype('float32')
-        self.build_extra_features(tiny_df)
-        return tiny_df
-
 class TSI(IndicatorStatic):
     NAME = 'TSI'
     def __init__(self):
@@ -384,23 +292,6 @@ class UI(IndicatorStatic):
         ui = UlcerIndex(close=ticker_df['adj_close'])
         tiny_df[self.NAME] = ui.ulcer_index().astype('float32')
         self.build_extra_features(tiny_df)
-        return tiny_df
-    
-class ADX(IndicatorStatic):
-    NAME = 'ADX'
-    def __init__(self):
-        return
-        
-    def get_name(self):
-        return self.NAME
-    
-    def build(self, tiny_df, ticker_df):
-        try:
-            adx = ADXIndicator(high=ticker_df['high'], low=ticker_df['low'], close=ticker_df['adj_close'])
-            tiny_df[self.NAME] = adx.adx_pos().astype('float32')
-            self.build_extra_features(tiny_df)
-        except:
-            logger.info(f'**** WARNING, could not create {self.NAME}. Its been excluded!')
         return tiny_df
 
 def _get_min_max(series1, series2, function: str = "min"):
@@ -542,7 +433,7 @@ class Impl_ATR():
         closes_shift = closes.shift(1)
         true_range = self._true_range(highs, lows, closes_shift)
         atr = np.zeros(len(closes))
-        atr[:] = np.NaN #hack
+        atr[:] = np.NaN #modified from the original library
         atr[interval - 1] = true_range[0 : interval].mean()
         for i in range(interval, len(atr)):
             atr[i] = (atr[i - 1] * (interval - 1) + true_range.iloc[i]) / float(interval)
@@ -590,62 +481,6 @@ class SRSI(IndicatorStatic):
             window=14, 
             smooth1=3, smooth2=3)
         tiny_df[self.NAME] = srsi.stochrsi().astype('float32')
-        self.build_extra_features(tiny_df)
-        return tiny_df
-
-class MFI(IndicatorStatic):
-    NAME = 'MFI'
-    def __init__(self):
-        return
-        
-    def get_name(self):
-        return self.NAME
-    
-    def build(self, tiny_df, ticker_df):
-        mfi = MFIIndicator(high=ticker_df['high'], low=ticker_df['low'], close=ticker_df['adj_close'], volume=ticker_df['volume'])
-        tiny_df[self.NAME] = mfi.money_flow_index().astype('float32')
-        self.build_extra_features(tiny_df)
-        return tiny_df
-
-class FI(IndicatorStatic):
-    NAME = 'FI'
-    def __init__(self):
-        return
-        
-    def get_name(self):
-        return self.NAME
-    
-    def build(self, tiny_df, ticker_df):
-        fi = ForceIndexIndicator(close=ticker_df['adj_close'], volume=ticker_df['volume'])
-        tiny_df[self.NAME] = fi.force_index().astype('float32')
-        self.build_extra_features(tiny_df)
-        return tiny_df
-
-class CMF(IndicatorStatic):
-    NAME = 'CMF'
-    def __init__(self):
-        return
-        
-    def get_name(self):
-        return self.NAME
-    
-    def build(self, tiny_df, ticker_df):
-        cmf = ChaikinMoneyFlowIndicator(high=ticker_df['high'], low=ticker_df['low'], close=ticker_df['adj_close'], volume=ticker_df['volume'])
-        tiny_df[self.NAME] = cmf.chaikin_money_flow().astype('float32')
-        self.build_extra_features(tiny_df)
-        return tiny_df
-
-class VWAP(IndicatorStatic):
-    NAME = 'VWAP'
-    def __init__(self):
-        return
-        
-    def get_name(self):
-        return self.NAME
-    
-    def build(self, tiny_df, ticker_df):
-        vwap = VolumeWeightedAveragePrice(high=ticker_df['high'], low=ticker_df['low'], close=ticker_df['adj_close'], volume=ticker_df['volume'])
-        tiny_df[self.NAME] = vwap.volume_weighted_average_price().astype('float32')
         self.build_extra_features(tiny_df)
         return tiny_df
 
@@ -733,6 +568,7 @@ class KAMA(IndicatorStatic): #normalized
         self.build_extra_features(tiny_df)
         return tiny_df
 
+########################## volume related indicators #######################
 class EMV(IndicatorStatic):
     NAME = 'EMV'
     def __init__(self):
@@ -744,5 +580,139 @@ class EMV(IndicatorStatic):
     def build(self, tiny_df, ticker_df):
         emv = EaseOfMovementIndicator(high=ticker_df['high'], low=ticker_df['low'], volume=ticker_df['volume'])
         tiny_df[self.NAME] = emv.sma_ease_of_movement().astype('float32')
+        self.build_extra_features(tiny_df)
+        return tiny_df
+
+class MFI(IndicatorStatic):
+    NAME = 'MFI'
+    def __init__(self):
+        return
+        
+    def get_name(self):
+        return self.NAME
+    
+    def build(self, tiny_df, ticker_df):
+        mfi = MFIIndicator(high=ticker_df['high'], low=ticker_df['low'], close=ticker_df['adj_close'], volume=ticker_df['volume'])
+        tiny_df[self.NAME] = mfi.money_flow_index().astype('float32')
+        self.build_extra_features(tiny_df)
+        return tiny_df
+
+class FI(IndicatorStatic): #abs
+    NAME = 'FI'
+    def __init__(self):
+        return
+        
+    def get_name(self):
+        return self.NAME
+    
+    def build(self, tiny_df, ticker_df):
+        fi = ForceIndexIndicator(close=ticker_df['adj_close'], volume=ticker_df['volume'])
+        tiny_df[self.NAME] = fi.force_index().astype('float32')
+        self.build_extra_features(tiny_df)
+        return tiny_df
+
+class CMF(IndicatorStatic): #abs
+    NAME = 'CMF'
+    def __init__(self):
+        return
+        
+    def get_name(self):
+        return self.NAME
+    
+    def build(self, tiny_df, ticker_df):
+        cmf = ChaikinMoneyFlowIndicator(high=ticker_df['high'], low=ticker_df['low'], close=ticker_df['adj_close'], volume=ticker_df['volume'])
+        tiny_df[self.NAME] = cmf.chaikin_money_flow().astype('float32')
+        self.build_extra_features(tiny_df)
+        return tiny_df
+
+class VWAP(IndicatorStatic):
+    NAME = 'VWAP'
+    def __init__(self):
+        return
+        
+    def get_name(self):
+        return self.NAME
+    
+    def build(self, tiny_df, ticker_df):
+        vwap = VolumeWeightedAveragePrice(high=ticker_df['high'], low=ticker_df['low'], close=ticker_df['adj_close'], volume=ticker_df['volume'])
+        tiny_df[self.NAME] = vwap.volume_weighted_average_price().astype('float32')
+        self.build_extra_features(tiny_df)
+        return tiny_df
+
+class PVO(IndicatorStatic):
+    NAME = 'PVO'
+    def __init__(self):
+        return
+        
+    def get_name(self):
+        return self.NAME
+    
+    def build(self, tiny_df, ticker_df):
+
+        window_slow = 26
+        window_fast = 12
+        window_sign = 9
+
+        pvo = PercentageVolumeOscillator(volume=ticker_df['volume'], 
+            window_fast=window_fast, 
+            window_slow=window_slow, 
+            window_sign=window_sign)
+        tiny_df[self.NAME] = pvo.pvo_hist().astype('float32')
+        self.build_extra_features(tiny_df)
+        return tiny_df
+
+class ADI(IndicatorStatic): #unknown
+    NAME = 'ADI'
+    def __init__(self):
+        return
+        
+    def get_name(self):
+        return self.NAME
+    
+    def build(self, tiny_df, ticker_df):
+        adi = AccDistIndexIndicator(high=ticker_df['high'], low=ticker_df['low'], close=ticker_df['adj_close'], volume=ticker_df['volume'])
+        tiny_df[self.NAME] = adi.acc_dist_index().astype('float32')
+        self.build_extra_features(tiny_df)
+        return tiny_df
+
+class OBV(IndicatorStatic): #unknown
+    NAME = 'OBV'
+    def __init__(self):
+        return
+        
+    def get_name(self):
+        return self.NAME
+    
+    def build(self, tiny_df, ticker_df):
+        obv = OnBalanceVolumeIndicator(close=ticker_df['adj_close'], volume=ticker_df['volume'])
+        tiny_df[self.NAME] = obv.on_balance_volume().astype('float32')
+        self.build_extra_features(tiny_df)
+        return tiny_df
+
+class VPT(IndicatorStatic): #unknown
+    NAME = 'VPT'
+    def __init__(self):
+        return
+        
+    def get_name(self):
+        return self.NAME
+    
+    def build(self, tiny_df, ticker_df):
+        vpt = VolumePriceTrendIndicator(close=ticker_df['adj_close'], volume=ticker_df['volume'])
+        tiny_df[self.NAME] = vpt.volume_price_trend().astype('float32')
+        self.build_extra_features(tiny_df)
+        return tiny_df
+
+class NVI(IndicatorStatic): #unknwon
+    NAME = 'NVI'
+    def __init__(self):
+        return
+        
+    def get_name(self):
+        return self.NAME
+    
+    def build(self, tiny_df, ticker_df):
+        nvi = NegativeVolumeIndexIndicator(close=ticker_df['adj_close'], volume=ticker_df['volume'])
+        tiny_df[self.NAME] = nvi.negative_volume_index().astype('float32')
         self.build_extra_features(tiny_df)
         return tiny_df

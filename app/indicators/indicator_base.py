@@ -1,4 +1,3 @@
-import pandas as pd
 import logging
 from app.utils.name_utils import TA_FEATURE_PREFIX
 

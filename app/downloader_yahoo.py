@@ -90,7 +90,7 @@ def chunks(l, n):
     return (l[i:i+n] for i in range(0, len(l), n))
 
 def download_data(db_dir, config):
-    logging.warn(f' Recreated folder {db_dir} from scratch ')
+    logging.info(f' Recreated folder {db_dir} from scratch ')
     shutil.rmtree(db_dir, ignore_errors=True)
 
     db_dir.mkdir(exist_ok=True)

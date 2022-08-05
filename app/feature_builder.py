@@ -1,4 +1,4 @@
-from app.utils.utils import get_ticker_data_cols
+from app.utils.utils import get_ticker_data_cols, get_ticker_data
 import pandas as pd
 import logging
 import gc
@@ -86,7 +86,8 @@ def build_features(features_batch_list, action):
     for ele in features_batch_list:
         cols.append(ele)
  
-    full_data = get_ticker_data_cols(paths.db_indicators, cols) #marc - debería de cambiarlo
+    #full_data = get_ticker_data_cols(paths.db_indicators, cols) #do not use denoised data
+    full_data = get_ticker_data(paths.db_denoised, cols) #use denoised data
     full_data['date'] = pd.to_datetime(full_data['date'],format='%Y%m%d')
     full_data = full_data.set_index('date')
     full_data.sort_index(inplace=True, ascending=True)

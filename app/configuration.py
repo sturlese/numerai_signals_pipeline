@@ -12,7 +12,7 @@ class SubmissionConfiguration:
     public_id = ""
     model_id = ""
     secret_key = ""
-    skip_check_needs_submission = False #do not check if the model has already been submitted
+    skip_check_needs_submission = True #do not check if the model has already been submitted
     numerai_submit = True  #make sure it's True if we want to submit predictions
 
     def __init__(self, properties):
@@ -21,8 +21,10 @@ class SubmissionConfiguration:
         self.secret_key = properties["secret_key"]
 
 class IndicatorConfiguration:
+
     indicators_dynamic = [KMA, VOL, RET, SHARP, SMA, EMA, WMA]
-    indicators_static = [MACD, MACDS, VI, DCP, KCP, BBP, SR, ROC, UI, ADX, ATR, RSI, MFI, FI, CMF, VWAP, TRIX, CCI, DPO, WR, KAMA, KST, STC, SRSI, MI, TSI, PPO, PVO, UO, AO, EMV]
+    indicators_static = [MACD, MACDS, VI, DCP, KCP, BBP, SR, ROC, UI, ADX, ATR, RSI, MFI, VWAP, TRIX, CCI, DPO, WR, KAMA, KST, STC, SRSI, MI, TSI, PPO, PVO, UO, AO, EMV]
+    #not using unknown NVI, VPT, OBV 
 
     static_windows = [0] #won't be used as window is the "default" one
     static_lags = [5, 10, 20]
@@ -51,7 +53,7 @@ class IndicatorConfiguration:
 class DataConfiguration:
     ROOT_PATH = 'data'
     AWS_BASE_URL='https://numerai-signals-public-data.s3-us-west-2.amazonaws.com'
-    skip_download = False #Skip download the raw data. Useful as it takes a while
+    skip_download = True #Skip download the raw data. Useful as it takes a while
     static_data = False #In case we want to use a static train, validation and live datasets (if we have it placed in the right folder)
     raw_data = 'yahoo'
     target_name = "target_20d" #Numerai's target 

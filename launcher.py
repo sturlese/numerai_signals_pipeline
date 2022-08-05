@@ -4,6 +4,7 @@ from app.indicator_builder import create_indicators_io
 from app.target_builder import create_target_io
 from app.ml_dataset_builder import create_colab_csv_io
 from app.prediction_builder import run_prediction
+from app.indicator_denoiser import denoise_indicators_io
 import app.folders as folders
 from app.configuration import get_indicator_config, get_data_config, get_submission_config
 import numpy as np
@@ -55,6 +56,8 @@ def run_full_pipline(indicator_config, data_config, submission_config):
     create_target_io(paths.db_raw, paths.db_target) #currently not used as using Numerai's
     logger.info("*** CREATING INDICATORS...")
     create_indicators_io(paths.db_raw, paths.db_indicators, paths.db_pickled_cols)
+    logger.info("*** DENOISING INDICATORS...")
+    denoise_indicators_io(paths.db_indicators, paths.db_denoised)
     logger.info("*** FEATURE ENGINEERING...")
     np.seterr('raise')
     feature_engineering_io(paths.db_pickled_cols)
