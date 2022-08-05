@@ -21,14 +21,23 @@ def denoise_indicators_io(db_input, db_output):
     lower_thresh = 0.001
 
     logger.info(f"Shape of the df BEFORE denoising {raw_data_df.shape}")
+    logger.info(f"")
 
     df_result = raw_data_df.copy()
+    df_tmp = raw_data_df.copy()
     for feature in feature_to_denoise:
+        start_rows = raw_data_df.shape[0]
         upper_q = raw_data_df[feature].quantile(upper_thresh)
         lower_q = raw_data_df[feature].quantile(lower_thresh)    
         df_result = df_result.query('@lower_q < ' + feature + ' < @upper_q')
+        df_tmp = raw_data_df.query('@lower_q < ' + feature + ' < @upper_q')
+        end_rows = df_tmp.shape[0]
+        deleted_rows = start_rows - end_rows
+        pct_dropped = round((start_rows/end_rows-1)*100,1)
+        print(f"Initial rows are {start_rows}. Deleted {deleted_rows} rows for feature {feature} representing {pct_dropped}% of the total rows.")
         gc.collect()
 
+    logger.info(f"")
     logger.info(f"Shape of the df AFTER denoising {df_result.shape}")
     rows_before_denoising = raw_data_df.shape[0]
     rows_after_denoising = df_result.shape[0]
