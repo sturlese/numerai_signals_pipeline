@@ -38,3 +38,4 @@ Some ideas thay can be integrated in the pipeline or implemented using data gene
 - Era wise Time Series Purged Cross Validation. 
 - Add regularization to Z-Score and Rank transformations.
 - Try paid sources of data to generate features based on fundamentals or improve the quality of the ones based on price and volume.
+- Remove last x train eras or first x validation ones to avoid data leakage on the validation metrics.
