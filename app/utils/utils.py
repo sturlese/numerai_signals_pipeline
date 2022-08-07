@@ -3,6 +3,8 @@ import logging
 import numpy as np
 import csv
 import logging
+import pyarrow as pa
+import pyarrow.parquet as pq
 
 logger = logging.getLogger()
 log_format = "%(asctime)s %(levelname)s %(name)s: %(message)s"
@@ -25,6 +27,7 @@ def get_ticker_data(db_dir):
         ticker_data = pd.read_parquet(db_dir)
 
     return ticker_data
+
 def get_ticker_data_cols(db_dir, cols): 
     ticker_data = pd.DataFrame({
         'bloomberg_ticker' : pd.Series([], dtype='str'),
@@ -34,3 +37,17 @@ def get_ticker_data_cols(db_dir, cols):
         ticker_data = pd.read_parquet(db_dir, columns=cols)
 
     return ticker_data
+
+def parquet_concat(dfs, path):
+    pqwriter = None
+    first_time = True
+    logger.info(f'Persisting dataframes...')
+    for df in dfs:
+        df.reset_index(drop=True, inplace=True)
+        table = pa.Table.from_pandas(df)
+        if first_time:
+            pqwriter = pq.ParquetWriter(path, table.schema, compression='brotli')
+            first_time = False
+        pqwriter.write_table(table)
+    if pqwriter:
+        pqwriter.close()

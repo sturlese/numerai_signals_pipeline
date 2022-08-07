@@ -1,12 +1,13 @@
-import app.downloader_yahoo as yahoo_data
+import app.providers.downloader_yahoo as yahoo_data
 from app.feature_builder import feature_engineering_io, compact_files_io
 from app.indicator_builder import create_indicators_io
 from app.target_builder import create_target_io
 from app.ml_dataset_builder import create_colab_csv_io
 from app.prediction_builder import run_prediction
 from app.indicator_denoiser import denoise_indicators_io
+from app.indicator_lagger import create_lagged_indicators_io
 import app.folders as folders
-from app.configuration import get_indicator_config, get_data_config, get_submission_config
+from app.configuration import get_data_config, get_submission_config
 import numpy as np
 import gc
 import time
@@ -34,11 +35,11 @@ def needs_submission(config):
         logger.info ("No submission found. Exception: " + str(e))
     return needs_submission
 
-def run_full_pipline(indicator_config, data_config, submission_config):
+def run_full_pipline(data_config, submission_config):
     if not submission_config.skip_check_needs_submission:
         if not needs_submission(submission_config):
             logger.info("WARNING - This model has already been submitted. Quitting.")
-            sys.exit(0)
+            sys.exit()
         else:
             logger.info("Need submission. Let's run the pipeline")
 
@@ -55,9 +56,11 @@ def run_full_pipline(indicator_config, data_config, submission_config):
     logger.info("*** CREATING CUSTOM TARGET... [currently not used]")
     create_target_io(paths.db_raw, paths.db_target) #currently not used as using Numerai's
     logger.info("*** CREATING INDICATORS...")
-    create_indicators_io(paths.db_raw, paths.db_indicators, paths.db_pickled_cols)
+    create_indicators_io(paths.db_raw, paths.db_indicators)
     logger.info("*** DENOISING INDICATORS...")
     denoise_indicators_io(paths.db_indicators, paths.db_denoised)
+    logger.info("*** CREATING LAGS TO INDICATORS...")
+    create_lagged_indicators_io(paths.db_denoised, paths.db_indicators_lagged, paths.db_pickled_cols)
     logger.info("*** FEATURE ENGINEERING...")
     np.seterr('raise')
     feature_engineering_io(paths.db_pickled_cols)
@@ -84,8 +87,7 @@ try:
 except:
   print("Wrong properties file as argument!")
 
-indicator_config = get_indicator_config()
 data_config = get_data_config(False)
 submission_config = get_submission_config(properties)
 
-run_full_pipline(indicator_config, data_config, submission_config)
+run_full_pipline(data_config, submission_config)

@@ -34,7 +34,7 @@ class MACDS(IndicatorStatic):
         macd = 100 * (exp1 - exp2) / exp2
         signal = ema1(macd, span3)
         tiny_df[self.NAME] = signal.astype('float32')
-        self.build_extra_features(tiny_df)
+        
 
         return tiny_df
 
@@ -54,7 +54,7 @@ class MACD(IndicatorStatic):
         exp2 = ema1(ticker_df['adj_close'], span2)
         macd = 100 * (exp1 - exp2) / exp2
         tiny_df[self.NAME] = macd.astype('float32')
-        self.build_extra_features(tiny_df)
+        
 
         return tiny_df
 
@@ -74,7 +74,7 @@ class KCP(IndicatorStatic):
             window=window, window_atr=int(window_atr), fillna=False, original_version=True)
 
         tiny_df[self.NAME] = kcp.astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class KST(IndicatorStatic):
@@ -97,7 +97,7 @@ class KST(IndicatorStatic):
             window3=window3,
             window4=window4)
         tiny_df[self.NAME] = kst.kst_diff().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class STC(IndicatorStatic):
@@ -119,7 +119,7 @@ class STC(IndicatorStatic):
         cycle=cycle, smooth1=3, smooth2=3, fillna=False)
 
         tiny_df[self.NAME] = stc_.astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class MI(IndicatorStatic):
@@ -139,7 +139,7 @@ class MI(IndicatorStatic):
             window_fast=window_fast, 
             window_slow=window_slow)
         tiny_df[self.NAME] = mi.mass_index().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class UO(IndicatorStatic):
@@ -160,7 +160,7 @@ class UO(IndicatorStatic):
             window2 = window2,
             window3 = window3)
         tiny_df[self.NAME] = uo.ultimate_oscillator().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class AO(IndicatorStatic):
@@ -178,7 +178,7 @@ class AO(IndicatorStatic):
             window1 = window1,
             window2 = window2)
         tiny_df[self.NAME] = ao.awesome_oscillator().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class PPO(IndicatorStatic):
@@ -199,7 +199,7 @@ class PPO(IndicatorStatic):
             window_slow=window_slow, 
             window_sign=window_sign)
         tiny_df[self.NAME] = ppo.ppo_hist().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class TSI(IndicatorStatic):
@@ -218,7 +218,7 @@ class TSI(IndicatorStatic):
             window_fast=window_fast, 
             window_slow=window_slow)
         tiny_df[self.NAME] = tsi.tsi().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class VI(IndicatorStatic):
@@ -232,7 +232,7 @@ class VI(IndicatorStatic):
     def build(self, tiny_df, ticker_df):
         vi = VortexIndicator(high=ticker_df['high'], low=ticker_df['low'], close=ticker_df['adj_close'])
         tiny_df[self.NAME] = vi.vortex_indicator_diff().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class DCP(IndicatorStatic):
@@ -248,7 +248,7 @@ class DCP(IndicatorStatic):
         offset=0, fillna=False)
 
         tiny_df[self.NAME] = dcp.astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 
@@ -263,7 +263,7 @@ class BBP(IndicatorStatic):
     def build(self, tiny_df, ticker_df):
         bbp = bollinger_pband(close=ticker_df['adj_close'], fillna=False)
         tiny_df[self.NAME] = bbp.astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class ROC(IndicatorStatic):
@@ -277,7 +277,7 @@ class ROC(IndicatorStatic):
     def build(self, tiny_df, ticker_df):
         roc = ROCIndicator(close=ticker_df['adj_close'])
         tiny_df[self.NAME] = roc.roc().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class UI(IndicatorStatic):
@@ -291,7 +291,7 @@ class UI(IndicatorStatic):
     def build(self, tiny_df, ticker_df):
         ui = UlcerIndex(close=ticker_df['adj_close'])
         tiny_df[self.NAME] = ui.ulcer_index().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 def _get_min_max(series1, series2, function: str = "min"):
@@ -405,7 +405,7 @@ class ADX(IndicatorStatic):
     def build(self, tiny_df, ticker_df):
         adx = Impl_ADX()
         tiny_df[self.NAME] = adx.impl(ticker_df, 14)
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class Impl_ATR():
@@ -451,7 +451,7 @@ class ATR(IndicatorStatic): #normalized
     def build(self, tiny_df, ticker_df):
         atr = Impl_ATR()
         tiny_df[self.NAME] = atr.impl(ticker_df, 14) / ticker_df['adj_close']
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class RSI(IndicatorStatic):
@@ -465,7 +465,7 @@ class RSI(IndicatorStatic):
     def build(self, tiny_df, ticker_df):
         rsi = RSIIndicator(close=ticker_df['adj_close'], window=14)
         tiny_df[self.NAME] = rsi.rsi().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class SRSI(IndicatorStatic):
@@ -481,7 +481,7 @@ class SRSI(IndicatorStatic):
             window=14, 
             smooth1=3, smooth2=3)
         tiny_df[self.NAME] = srsi.stochrsi().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class TRIX(IndicatorStatic):
@@ -495,7 +495,7 @@ class TRIX(IndicatorStatic):
     def build(self, tiny_df, ticker_df):
         trix = TRIXIndicator(close=ticker_df['adj_close'])
         tiny_df[self.NAME] = trix.trix().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class CCI(IndicatorStatic):
@@ -509,7 +509,7 @@ class CCI(IndicatorStatic):
     def build(self, tiny_df, ticker_df):
         cci = CCIIndicator(high=ticker_df['high'], low=ticker_df['low'], close=ticker_df['adj_close'])
         tiny_df[self.NAME] = cci.cci().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class DPO(IndicatorStatic):
@@ -523,7 +523,7 @@ class DPO(IndicatorStatic):
     def build(self, tiny_df, ticker_df):
         dpo = DPOIndicator(close=ticker_df['adj_close'])
         tiny_df[self.NAME] = dpo.dpo().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class SR(IndicatorStatic):
@@ -537,7 +537,7 @@ class SR(IndicatorStatic):
     def build(self, tiny_df, ticker_df):
         sr = StochasticOscillator(high=ticker_df['high'], low=ticker_df['low'], close=ticker_df['adj_close'])
         tiny_df[self.NAME] = sr.stoch_signal().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class WR(IndicatorStatic):
@@ -551,7 +551,7 @@ class WR(IndicatorStatic):
     def build(self, tiny_df, ticker_df):
         wr = WilliamsRIndicator(high=ticker_df['high'], low=ticker_df['low'], close=ticker_df['adj_close'])
         tiny_df[self.NAME] = wr.williams_r().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class KAMA(IndicatorStatic): #normalized
@@ -565,7 +565,7 @@ class KAMA(IndicatorStatic): #normalized
     def build(self, tiny_df, ticker_df):
         kama = KAMAIndicator(close=ticker_df['adj_close'])
         tiny_df[self.NAME] = ticker_df['adj_close'] / kama.kama().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 ########################## volume related indicators #######################
@@ -580,7 +580,7 @@ class EMV(IndicatorStatic):
     def build(self, tiny_df, ticker_df):
         emv = EaseOfMovementIndicator(high=ticker_df['high'], low=ticker_df['low'], volume=ticker_df['volume'])
         tiny_df[self.NAME] = emv.sma_ease_of_movement().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class MFI(IndicatorStatic):
@@ -594,7 +594,7 @@ class MFI(IndicatorStatic):
     def build(self, tiny_df, ticker_df):
         mfi = MFIIndicator(high=ticker_df['high'], low=ticker_df['low'], close=ticker_df['adj_close'], volume=ticker_df['volume'])
         tiny_df[self.NAME] = mfi.money_flow_index().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class FI(IndicatorStatic): #abs
@@ -608,7 +608,7 @@ class FI(IndicatorStatic): #abs
     def build(self, tiny_df, ticker_df):
         fi = ForceIndexIndicator(close=ticker_df['adj_close'], volume=ticker_df['volume'])
         tiny_df[self.NAME] = fi.force_index().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class CMF(IndicatorStatic): #abs
@@ -622,7 +622,7 @@ class CMF(IndicatorStatic): #abs
     def build(self, tiny_df, ticker_df):
         cmf = ChaikinMoneyFlowIndicator(high=ticker_df['high'], low=ticker_df['low'], close=ticker_df['adj_close'], volume=ticker_df['volume'])
         tiny_df[self.NAME] = cmf.chaikin_money_flow().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class VWAP(IndicatorStatic):
@@ -636,7 +636,7 @@ class VWAP(IndicatorStatic):
     def build(self, tiny_df, ticker_df):
         vwap = VolumeWeightedAveragePrice(high=ticker_df['high'], low=ticker_df['low'], close=ticker_df['adj_close'], volume=ticker_df['volume'])
         tiny_df[self.NAME] = vwap.volume_weighted_average_price().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class PVO(IndicatorStatic):
@@ -658,7 +658,7 @@ class PVO(IndicatorStatic):
             window_slow=window_slow, 
             window_sign=window_sign)
         tiny_df[self.NAME] = pvo.pvo_hist().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class ADI(IndicatorStatic): #unknown
@@ -672,7 +672,7 @@ class ADI(IndicatorStatic): #unknown
     def build(self, tiny_df, ticker_df):
         adi = AccDistIndexIndicator(high=ticker_df['high'], low=ticker_df['low'], close=ticker_df['adj_close'], volume=ticker_df['volume'])
         tiny_df[self.NAME] = adi.acc_dist_index().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class OBV(IndicatorStatic): #unknown
@@ -686,7 +686,7 @@ class OBV(IndicatorStatic): #unknown
     def build(self, tiny_df, ticker_df):
         obv = OnBalanceVolumeIndicator(close=ticker_df['adj_close'], volume=ticker_df['volume'])
         tiny_df[self.NAME] = obv.on_balance_volume().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class VPT(IndicatorStatic): #unknown
@@ -700,7 +700,7 @@ class VPT(IndicatorStatic): #unknown
     def build(self, tiny_df, ticker_df):
         vpt = VolumePriceTrendIndicator(close=ticker_df['adj_close'], volume=ticker_df['volume'])
         tiny_df[self.NAME] = vpt.volume_price_trend().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df
 
 class NVI(IndicatorStatic): #unknwon
@@ -714,5 +714,5 @@ class NVI(IndicatorStatic): #unknwon
     def build(self, tiny_df, ticker_df):
         nvi = NegativeVolumeIndexIndicator(close=ticker_df['adj_close'], volume=ticker_df['volume'])
         tiny_df[self.NAME] = nvi.negative_volume_index().astype('float32')
-        self.build_extra_features(tiny_df)
+        
         return tiny_df

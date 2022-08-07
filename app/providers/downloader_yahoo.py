@@ -102,7 +102,7 @@ def download_data(db_dir, config):
     n_ticker_missing = ticker_missing.shape[0]
     if n_ticker_missing <= 0:
         logger.info(f'WARNING - No data to download. Stopping the program')
-        sys.exit(0)
+        sys.exit()
         return
 
     logger.info(f'Downloading data for {n_ticker_missing} tickers')

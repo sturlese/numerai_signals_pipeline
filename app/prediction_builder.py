@@ -13,6 +13,7 @@ log_format = "%(asctime)s %(levelname)s %(name)s: %(message)s"
 logging.basicConfig(format=log_format, level=logging.INFO)
 
 PREDICTION_NAME = 'signal'
+MAX_CORR_ALLOWED = 0.96
 
 def create_corrs(tmp_train_era, fs):
     tmp_train_era = tmp_train_era[fs].copy()
@@ -50,7 +51,7 @@ def remove_corr_features(train_data):
     feature_names_all = [f for f in train_data.columns if f.startswith("feature")]
     logger.info(f"Original num features {len(feature_names_all)}")    
     train_data = train_data[["date"] + features_corr_candidates].copy()
-    drop_features = get_features_to_delete(train_data, features_corr_candidates, 0.96)
+    drop_features = get_features_to_delete(train_data, features_corr_candidates, MAX_CORR_ALLOWED)
     logger.info(f"Going to drop {len(drop_features)} features: {len(drop_features)}")
     final_features = [item for item in feature_names_all if item not in drop_features]
     logger.info(f'Num features after removing the correlated ones {len(final_features)}')
@@ -65,10 +66,6 @@ def build_preds_file(test_data, live_data, predictions_path, last_friday):
     diagnostic_df[['numerai_ticker', 'friday_date', 
         'data_type','signal']].reset_index(drop=True).to_csv(predictions_path, index=False)
     logger.info('Signals file ready to submit')
-
-def numerai_score(predictions, targets):
-    ranked_preds = predictions.rank(pct=True, method="first")
-    return np.corrcoef(ranked_preds, targets)[0, 1]
 
 def run_prediction(db_input, db_predictions, submission_config, data_config):
     full_data = read_csv(db_input / ML_DATA_FILE)

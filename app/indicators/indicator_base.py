@@ -8,27 +8,20 @@ logging.basicConfig(format=log_format, level=logging.INFO)
 class IndicatorBase:
     NAME = ''
     interval = -1
-    indicator_lags = None
     def __init__(self):
         return
 
     def get_name(self):
-        raise NotImplementedError("Please Implement this method")
+        return self.NAME
 
     def set_interval(self, interval):
         self.interval = interval
         
     def rewrite_name(self, interval):
         self.NAME = f"{TA_FEATURE_PREFIX}_"  + self.NAME + "_" + str(interval)
-    
-    def set_lags(self, lags):
-        self.indicator_lags = lags
         
     def build(self, df):
         raise NotImplementedError("Please Implement this method")
-
-    def build_extra_features(self, tiny_df):
-        raise NotImplementedError("Please Implement this method") 
 
 class IndicatorDynamic(IndicatorBase):
     def build_extra_features(self, tiny_df):
@@ -41,3 +34,27 @@ class IndicatorStatic(IndicatorBase):
         for i in self.indicator_lags:
             pos = i
             tiny_df[f'{self.NAME}_lag_{pos}'] = tiny_df[self.NAME].shift(pos).astype('float32')
+
+class IndicatorLaggerBase:
+    NAME = ''
+    interval = -1
+    TYPE = ""
+    lags = []
+    def __init__(self, name, interval, type, lags):
+        self.NAME = name
+        self.interval = interval
+        self.TYPE = type
+        self.lags = lags
+
+    def get_name(self):
+        return self.NAME
+
+    def get_interval(self):
+        return self.interval
+
+    def get_type(self):
+        return self.TYPE
+
+    def get_lags(self):
+        return self.lags
+        

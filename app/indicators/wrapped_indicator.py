@@ -8,16 +8,14 @@ class WrappedIndicator:
     wrapped_class = None
     intervals = None
     lags = None
-    def __init__(self, wrapped_class, intervals, lags):
+    def __init__(self, wrapped_class, intervals):
         self.wrapped_class = wrapped_class
         self.intervals = intervals
-        self.lags = lags
 
     def build_indicators(self, tiny_df, df):   
         for interval in self.intervals:
             obj = self.wrapped_class()
             obj.set_interval(interval)
             obj.rewrite_name(interval)
-            obj.set_lags(self.lags)
             obj.build(tiny_df, df)
         return tiny_df

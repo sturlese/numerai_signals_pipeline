@@ -10,15 +10,15 @@ from multiprocessing import Pool, cpu_count
 from app.configuration import get_data_config
 from tqdm import tqdm
 import logging
-from app.utils.name_utils import COLUMNS_FILE
-from app.utils.name_utils import LABEL_FEATURE_PREFIX
+from app.utils.name_utils import LABEL_FEATURE_PREFIX, COLUMNS_LAGGED_FILE, TRANSFORMATION_BIN, TRANSFORMATION_ZSCORE, TRANSFORMATION_RANK
+import sys
 
 logger = logging.getLogger()
 log_format = "%(asctime)s %(levelname)s %(name)s: %(message)s"
 logging.basicConfig(format=log_format, level=logging.INFO)
 
 ENCODES = 'ENCODES'
-QUINTILES = 'QUINTILES'
+NORMALIZERS = 'NORMALIZERS'
 
 def get_ticker_data_file(file_path): 
     ticker_data = pd.DataFrame({
@@ -34,19 +34,32 @@ def check_dups(df):
     if num_dups > 0:
         logger.info("Num duplicates found: " + str(df_out))
         df.drop_duplicates(inplace=True)
-        raise Exception("CRITICAL PROBLEM: Found duplicate rows. Stopping execution")
+        raise Exception("CRITICAL: Found duplicate rows. Stopping execution")
 
-def create_quintiles(full_data):
+def create_normalizers(full_data, config_data):
     indicators = full_data.columns.values.tolist()  
     indicators.remove('bloomberg_ticker')
     
     date_groups = full_data.groupby(full_data.index)
     for feature in indicators:
         indicator_name = feature
-        full_feature_name = f'feature_{indicator_name}_quintile'
+        full_feature_name = f'feature_{indicator_name}_normal'
         try:
-            full_data[full_feature_name] = date_groups[indicator_name].transform(
-                lambda group: pd.qcut(group, 9, labels=False, duplicates='drop')).astype('float32')
+            if config_data.TRANSFORMATION_TYPE == TRANSFORMATION_BIN:
+                full_data[full_feature_name] = date_groups[indicator_name].transform(
+                    lambda group: pd.qcut(group, 9, labels=False, duplicates='drop')).astype('float32')
+            elif config_data.TRANSFORMATION_TYPE == TRANSFORMATION_ZSCORE:
+                #= (df.a - df.a.mean())/df.a.std(ddof=0)
+                #full_data[full_feature_name] = date_groups[indicator_name].transform(
+                #    lambda group: zscore(group)).astype('float32')
+                full_data[full_feature_name] = date_groups[indicator_name].transform(
+                    lambda x: (x - x.mean())/x.std(ddof=0)).astype('float32')
+            elif config_data.TRANSFORMATION_TYPE == TRANSFORMATION_RANK:
+                full_data[full_feature_name] = date_groups[indicator_name].transform(
+                    lambda group: group.rank()).astype('float32')
+            else:
+                logger.info(f"Unrecognised transformation type {config_data.TRANSFORMATION_TYPE}")
+                sys.exit()
         except:
             logger.info(f'WARNING, could not do quintiles for {full_feature_name}. It has been excluded!')
 
@@ -70,15 +83,15 @@ def chunks(l, n):
 def encodes(features_batch_list):
     build_features(features_batch_list, ENCODES)
 
-def quintiles(features_batch_list):
-    build_features(features_batch_list, QUINTILES)
+def normalizers(features_batch_list):
+    build_features(features_batch_list, NORMALIZERS)
 
 def build_features(features_batch_list, action):
     full_data = pd.DataFrame()
     full_data_io = pd.DataFrame()
 
-    config = get_data_config(False)
-    paths = folders.PathSignals(config)
+    config_data = get_data_config(False)
+    paths = folders.PathSignals(config_data)
     paths.setup()
     unique_id = dt.datetime.utcnow().timestamp()
 
@@ -86,21 +99,20 @@ def build_features(features_batch_list, action):
     for ele in features_batch_list:
         cols.append(ele)
  
-    #full_data = get_ticker_data_cols(paths.db_indicators, cols) #do not use denoised data
-    full_data = get_ticker_data(paths.db_denoised, cols) #use denoised data
+    full_data = get_ticker_data_cols(paths.db_indicators_lagged, cols)
     full_data['date'] = pd.to_datetime(full_data['date'],format='%Y%m%d')
     full_data = full_data.set_index('date')
     full_data.sort_index(inplace=True, ascending=True)
 
-    if action == QUINTILES:
-        full_data = create_quintiles(full_data)
+    if action == NORMALIZERS:
+        full_data = create_normalizers(full_data, config_data)
     elif action == ENCODES:
         full_data = create_encodes(full_data)
     else:
         raise Exception(f"CRITICAL: Unrecognized action {action}")
     
     full_data['date'] = full_data.index
-    full_data = full_data[(full_data.index.weekday == config.week_day) | (full_data.index.weekday == (config.week_day - 1))] #to save time and space we do this here
+    full_data = full_data[(full_data.index.weekday == config_data.week_day) | (full_data.index.weekday == (config_data.week_day - 1))] #to save time and space we do this here
     col_list = [f for f in full_data.columns if f.startswith("feature")]
     col_list= ['bloomberg_ticker', 'date'] + col_list
     full_data_io = full_data[col_list].copy()
@@ -112,7 +124,7 @@ def build_features(features_batch_list, action):
 
 def feature_engineering_io(db_pickle):
     logger.info("Engineering features...")
-    full_indicator_list = pickle.load(open(f"{db_pickle}/{COLUMNS_FILE}", 'rb'))
+    full_indicator_list = pickle.load(open(f"{db_pickle}/{COLUMNS_LAGGED_FILE}", 'rb'))
     indicators_batches = chunks(full_indicator_list, 30)
 
     indicator_batches_list = []
@@ -120,9 +132,9 @@ def feature_engineering_io(db_pickle):
         indicator_batches_list.append(btch)
 
     #using threads seems to corrupt parquet files that's why we use a pool of 1
-    logger.info("Generating quintiles...")
+    logger.info("Generating normalization...")
     with Pool(1) as p:
-        list(tqdm(p.imap(quintiles, indicator_batches_list), total=len(indicator_batches_list)))
+        list(tqdm(p.imap(normalizers, indicator_batches_list), total=len(indicator_batches_list)))
     
     features_batch_list = ["country", "sector", "industry", "currency"]
     logger.info(f"Generating label encodes for {features_batch_list}")

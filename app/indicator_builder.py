@@ -1,14 +1,9 @@
 from distutils.command.config import config
-from app.utils.utils import get_ticker_data
+from app.utils.utils import get_ticker_data, parquet_concat
 import pandas as pd
 import logging
 import gc
 from tqdm import tqdm
-import pyarrow as pa
-import pyarrow.parquet as pq
-import pickle
-from app.utils.name_utils import COLUMNS_FILE
-from app.utils.name_utils import TA_FEATURE_PREFIX
 from multiprocessing import Pool, cpu_count
 from app.configuration import get_indicator_config
 import logging
@@ -52,32 +47,10 @@ def build_indicators_dfs(df_input):
 
     return feature_dfs
 
-def create_indicators_io(db_input, db_output, db_pickle):
+def create_indicators_io(db_input, db_output):
     raw_data = get_ticker_data(db_input)
     raw_data = raw_data.set_index('date')
     raw_data['date'] = raw_data.index
     dfs = build_indicators_dfs(raw_data)
     path = db_output / f'indicators_data.parquet'
-    parquet_concat(dfs, path, db_pickle)
-
-def parquet_concat(dfs, path, db_pickle):
-    pqwriter = None
-    first_time = True
-    pickled_cols = set()
-    for df in dfs:
-        col_list = df.columns.values.tolist()
-        for col in col_list:
-            if col.startswith(TA_FEATURE_PREFIX):
-                pickled_cols.add(col)
-    logger.info(f"Pickling columns {list(pickled_cols)}")
-    pickle.dump(list(pickled_cols), open(f"{db_pickle}/{COLUMNS_FILE}", 'wb'), protocol=-1)
-    logger.info(f'Persisting dataframes...')
-    for df in dfs:
-        df.reset_index(drop=True, inplace=True)
-        table = pa.Table.from_pandas(df)
-        if first_time:
-            pqwriter = pq.ParquetWriter(path, table.schema, compression='brotli')
-            first_time = False
-        pqwriter.write_table(table)
-    if pqwriter:
-        pqwriter.close()
+    parquet_concat(dfs, path)
