@@ -29,7 +29,6 @@ class IndicatorConfiguration:
     static_lags = [5, 10, 20]
     dynamic_lags = [0.25, 0.5, 0.75, 1.0]
     dynamic_windows = [14, 20, 40, 60]
-    static_windows = [0] #won't be used as window is the "default" one
     
     def get_indicators_lag(self, windows, indicators, indicator_type, lags):
         lagged_indicators  = []
@@ -38,15 +37,15 @@ class IndicatorConfiguration:
                 obj = indicator_class()
                 obj.set_interval(interval)
                 obj.rewrite_name(interval)
-                ilb = IndicatorLaggerBase(obj.get_name(), interval, indicator_type, lags)
-                lagged_indicators.append(ilb)
+                i_l_b = IndicatorLaggerBase(obj.get_name(), interval, indicator_type, lags)
+                lagged_indicators.append(i_l_b)
         return lagged_indicators
 
     def get_indicators_lag_dynamics(self):
         return self.get_indicators_lag(self.dynamic_windows, self.indicators_dynamic, INDICATOR_DYAMIC, self.dynamic_lags)
 
     def get_indicators_lag_static(self):
-        return self.get_indicators_lag(self.static_windows, self.indicators_static, INDICATOR_STATIC, self.static_lags)
+        return self.get_indicators_lag([0], self.indicators_static, INDICATOR_STATIC, self.static_lags)
 
     def get_indicators(self, indicators, windows):
         wrapped_indicator_instances = []
@@ -59,7 +58,7 @@ class IndicatorConfiguration:
         return self.get_indicators(self.indicators_dynamic, self.dynamic_windows)
 
     def get_indicators_static(self):
-        return self.get_indicators(self.indicators_static, self.static_windows)
+        return self.get_indicators(self.indicators_static, [0])
 
     #contains all indicators needed for the indicator_builder phase
     def get_indicator_list(self):
