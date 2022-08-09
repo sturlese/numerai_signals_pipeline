@@ -49,9 +49,6 @@ def create_normalizers(full_data, config_data):
                 full_data[full_feature_name] = date_groups[indicator_name].transform(
                     lambda group: pd.qcut(group, 9, labels=False, duplicates='drop')).astype('float32')
             elif config_data.TRANSFORMATION_TYPE == TRANSFORMATION_ZSCORE:
-                #= (df.a - df.a.mean())/df.a.std(ddof=0)
-                #full_data[full_feature_name] = date_groups[indicator_name].transform(
-                #    lambda group: zscore(group)).astype('float32')
                 full_data[full_feature_name] = date_groups[indicator_name].transform(
                     lambda x: (x - x.mean())/x.std(ddof=0)).astype('float32')
             elif config_data.TRANSFORMATION_TYPE == TRANSFORMATION_RANK:
