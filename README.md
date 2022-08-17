@@ -1,5 +1,5 @@
 # Numerai Signals Pipeline
-Downloads data from Yahoo Finance, generates features, trains a model and submits the predictions.
+Downloads data from Yahoo Finance, generates features, trains a model and submits the predictions to the tournament.
 
 ### Running the pipeline
 
