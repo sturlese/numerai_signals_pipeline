@@ -72,7 +72,6 @@ def get_ticker_missing( #just used here so not moved to utils file
     tickers_outdated = eligible_tickers_available_data.loc[
         (
             (eligible_tickers_available_data.date_max < last_friday.strftime('%Y-%m-%d'))
-            #& (eligible_tickers_available_data.date_max > last_friday_20.strftime('%Y-%m-%d')) #esta la debería de poder quitar
         ),
         ['bloomberg_ticker', 'yahoo', 'date_max']
     ]
