@@ -5,10 +5,11 @@ import csv
 import logging
 import pyarrow as pa
 import pyarrow.parquet as pq
+import sys
 
 logger = logging.getLogger()
 log_format = "%(asctime)s %(levelname)s %(name)s: %(message)s"
-logging.basicConfig(format=log_format, level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, format=log_format, level=logging.INFO)
 
 def read_csv(file_path):
     with open(file_path, 'r') as f:

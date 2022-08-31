@@ -7,10 +7,11 @@ from tqdm import tqdm
 from multiprocessing import Pool, cpu_count
 from app.configuration import get_indicator_config
 import logging
+import sys
 
 logger = logging.getLogger()
 log_format = "%(asctime)s %(levelname)s %(name)s: %(message)s"
-logging.basicConfig(format=log_format, level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, format=log_format, level=logging.INFO)
 
 def build_ticker_indicators(ticker_df):
     conf = get_indicator_config()

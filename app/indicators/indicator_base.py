@@ -1,9 +1,10 @@
 import logging
 from app.utils.name_utils import TA_FEATURE_PREFIX
+import sys
 
 logger = logging.getLogger()
 log_format = "%(asctime)s %(levelname)s %(name)s: %(message)s"
-logging.basicConfig(format=log_format, level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, format=log_format, level=logging.INFO)
 
 class IndicatorBase:
     NAME = ''

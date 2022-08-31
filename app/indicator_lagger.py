@@ -11,7 +11,7 @@ import sys
 
 logger = logging.getLogger()
 log_format = "%(asctime)s %(levelname)s %(name)s: %(message)s"
-logging.basicConfig(format=log_format, level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, format=log_format, level=logging.INFO)
 
 def add_lagged_indicators(tiny_ticker_df, lagged_indicator_objects, indicator_name):
     for indicator_object in lagged_indicator_objects:

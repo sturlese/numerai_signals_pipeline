@@ -20,7 +20,7 @@ import pandas as pd
 
 logger = logging.getLogger()
 log_format = "%(asctime)s %(levelname)s %(name)s: %(message)s"
-logging.basicConfig(format=log_format, level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, format=log_format, level=logging.INFO)
 warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning) 
 
 def needs_submission(config):

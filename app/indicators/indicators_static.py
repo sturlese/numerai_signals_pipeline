@@ -2,6 +2,7 @@ import logging
 from app.indicators.indicator_base import IndicatorStatic
 import pandas as pd
 import numpy as np
+import sys
 from ta.momentum import ROCIndicator, RSIIndicator, StochasticOscillator, WilliamsRIndicator, KAMAIndicator, StochRSIIndicator, UltimateOscillator, AwesomeOscillatorIndicator, PercentagePriceOscillator, PercentageVolumeOscillator, TSIIndicator
 from ta.volatility import UlcerIndex, bollinger_pband, keltner_channel_pband, donchian_channel_pband
 from ta.trend import TRIXIndicator, CCIIndicator, DPOIndicator, VortexIndicator, KSTIndicator, stc, MassIndex
@@ -10,7 +11,7 @@ from ta.volume import NegativeVolumeIndexIndicator, VolumePriceTrendIndicator, O
 import logging
 logger = logging.getLogger()
 log_format = "%(asctime)s %(levelname)s %(name)s: %(message)s"
-logging.basicConfig(format=log_format, level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, format=log_format, level=logging.INFO)
 
 def ema1(adj_close, span):
     a= 2/(span+1)

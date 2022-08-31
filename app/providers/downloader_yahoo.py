@@ -12,6 +12,7 @@ from concurrent import futures
 from tqdm import tqdm
 from datetime import datetime, date, time
 from dateutil.relativedelta import relativedelta, FR
+import sys
 
 USER_AGENTS = [
     (
@@ -27,7 +28,7 @@ USER_AGENTS = [
 import logging
 logger = logging.getLogger()
 log_format = "%(asctime)s %(levelname)s %(name)s: %(message)s"
-logging.basicConfig(format=log_format, level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, format=log_format, level=logging.INFO)
 
 
 def get_tickers(config): #just used here so not moved to utils file

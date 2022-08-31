@@ -2,11 +2,12 @@ import logging
 import numpy as np
 from app.indicators.indicator_base import IndicatorDynamic
 from ta.trend import SMAIndicator, EMAIndicator, WMAIndicator
+import sys
 
 import logging
 logger = logging.getLogger()
 log_format = "%(asctime)s %(levelname)s %(name)s: %(message)s"
-logging.basicConfig(format=log_format, level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, format=log_format, level=logging.INFO)
 
 class KMA(IndicatorDynamic):
     NAME = 'KMA'

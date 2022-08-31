@@ -4,17 +4,18 @@ from app.indicators.wrapped_indicator import WrappedIndicator
 from app.indicators.indicators_dynamic import KMA, VOL, RET, SHARP, SMA, EMA, WMA
 from app.indicators.indicators_static import MACD, MACDS, VI, DCP, KCP, BBP, SR, ROC, UI, ADX, ATR, RSI, MFI, FI, CMF, VWAP, TRIX, CCI, DPO, WR, KAMA, KST, STC, SRSI, MI, TSI, PPO, PVO, UO, AO, EMV
 import logging
+import sys
 from app.utils.name_utils import INDICATOR_STATIC, INDICATOR_DYAMIC, TRANSFORMATION_BIN, TRANSFORMATION_ZSCORE, TRANSFORMATION_RANK
 
 logger = logging.getLogger()
 log_format = "%(asctime)s %(levelname)s %(name)s: %(message)s"
-logging.basicConfig(format=log_format, level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, format=log_format, level=logging.INFO)
 
 class SubmissionConfiguration:
     public_id = ""
     model_id = ""
     secret_key = ""
-    skip_check_needs_submission = True #do not check if the model has already been submitted
+    skip_check_needs_submission = False #do not check if the model has already been submitted
     numerai_submit = True  #make sure it's True if we want to submit predictions
 
     def __init__(self, properties):

@@ -6,10 +6,11 @@ from datetime import datetime
 import gc
 from dateutil.relativedelta import relativedelta, FR
 import logging
+import sys
 
 logger = logging.getLogger()
 log_format = "%(asctime)s %(levelname)s %(name)s: %(message)s"
-logging.basicConfig(format=log_format, level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, format=log_format, level=logging.INFO)
 
 def get_data(db_dir, config):
 

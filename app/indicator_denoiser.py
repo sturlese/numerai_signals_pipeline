@@ -2,15 +2,16 @@ from app.utils.utils import get_ticker_data
 from app.utils.name_utils import TA_FEATURE_PREFIX
 import logging
 import gc
+import sys
 
 logger = logging.getLogger()
 log_format = "%(asctime)s %(levelname)s %(name)s: %(message)s"
-logging.basicConfig(format=log_format, level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, format=log_format, level=logging.INFO)
 
 def denoise_indicators_io(db_input, db_output):
     raw_data_df = get_ticker_data(db_input)
     feature_to_denoise = [f for f in raw_data_df.columns if f.startswith(TA_FEATURE_PREFIX)]
-    print (f"Num features to denoise {len(feature_to_denoise)}")
+    logger.info (f"Num features to denoise {len(feature_to_denoise)}")
 
     #shouldn't be done here
     label_encodings = ["country", "industry", "sector", "currency"]
@@ -32,7 +33,7 @@ def denoise_indicators_io(db_input, db_output):
         end_rows = df_result.shape[0]
         deleted_rows = start_rows - end_rows
         pct_dropped = round((start_rows/end_rows-1)*100,1)
-        print(f"Initial rows are {start_rows}. Deleted {deleted_rows} rows for feature {feature} representing {pct_dropped}% of the total rows.")
+        logger.info(f"Initial rows are {start_rows}. Deleted {deleted_rows} rows for feature {feature} representing {pct_dropped}% of the total rows.")
         gc.collect()
 
     logger.info(f"")
