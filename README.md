@@ -22,7 +22,7 @@ Corresponding to:
 ***Make sure your properties file is added to the .gitignore as contains sensitive data.***
 
 ### Output data
-Once the pipeline finishes, there will be 3 folders with data files: 
+Once the pipeline finishes, there will be 2 folders with data files: 
 - **db_ml_csv**: Contains data to train, validate and predict. We can use this file to improve training or try other models outside this pipeline.
 - **db_predictions**: Contains a file that will be submitted automatically to the indicated model. We can also manually upload it as a diagnostics file.
 
