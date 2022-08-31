@@ -15,7 +15,7 @@ class SubmissionConfiguration:
     public_id = ""
     model_id = ""
     secret_key = ""
-    skip_check_needs_submission = False #do not check if the model has already been submitted
+    skip_check_needs_submission = False #check if the model has already been submitted
     numerai_submit = True  #make sure it's True if we want to submit predictions
 
     def __init__(self, properties):
