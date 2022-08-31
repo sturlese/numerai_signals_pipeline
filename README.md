@@ -1,5 +1,5 @@
 # Numerai Signals Pipeline
-Downloads data from Yahoo Finance, generates features, trains a model and submits the predictions to the tournament.
+Downloads data from Yahoo Finance, generates features, trains a model and submits the predictions.
 
 ### Running the pipeline
 
@@ -22,11 +22,12 @@ Corresponding to:
 ***Make sure your properties file is added to the .gitignore as contains sensitive data.***
 
 ### Output data
-Once the pipeline finishes, there will be 2 folders with data files: 
+Once the pipeline finishes, there will be 3 folders with data files:
+- **db_raw_downloaded**: Contains data downloaded from our source (currently Yahoo Finance). We keep it as there is an option to run the pipeline with already downloaded data. 
 - **db_ml_csv**: Contains data to train, validate and predict. We can use this file to improve training or try other models outside this pipeline.
 - **db_predictions**: Contains a file that will be submitted automatically to the indicated model. We can also manually upload it as a diagnostics file.
 
-If we want to remove the data from these folders, we will have to do it manually.
+If we want to remove the data from these 3 folders, we will have to do it manually.
 
 ### Configurations
 There are 3 configurations in the configuration python file. There are parameters we might want to configure:
